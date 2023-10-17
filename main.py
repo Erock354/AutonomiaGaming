@@ -11,7 +11,7 @@ pygame.display.set_caption("IDK MAN")
 HEIGHT = 500
 WIDTH = 500
 PLAYER_VEL = 5
-FPS = 180
+FPS = 60
 clock = pygame.time.Clock()
 
 screen = pygame.display.set_mode([HEIGHT, WIDTH])
@@ -62,10 +62,10 @@ def handle_horizontal_collision(player, objects):
 
 def main():
     running = True
-
-    # connection = connect()
     block_size = 64
     player = Player(100, 64, block_size, block_size)
+
+    connection = connect()
 
     floor = [Block(i * block_size, HEIGHT - block_size, block_size) for i in
              range(-WIDTH // block_size, WIDTH * 2 // block_size)]
@@ -74,12 +74,10 @@ def main():
 
     while running:
         clock.tick(FPS)
+        send(connection, player)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.KEYDOWN:
-                pass
-                # send(connection, "sus")
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     player.jump(objects=objects)
