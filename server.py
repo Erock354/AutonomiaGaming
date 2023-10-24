@@ -28,8 +28,6 @@ def handle_client(conn, addr):
             data = data.decode("utf-8")
             data = json.loads(data)
 
-            print(data['x'])
-
             for player in players:
                 if player['addr'] == data['addr']:
                     player['x'] = data['x']
