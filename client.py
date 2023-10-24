@@ -40,6 +40,7 @@ def send(client, player):
 
 
 def receive(conn, sus):
+    print("RECEIVING DATA")
     while True:
         data = conn.recv(1024)
         data = data.decode("utf-8")
@@ -47,5 +48,5 @@ def receive(conn, sus):
         print(data, "\n")
         other_players = []
         for player in data:
-            other_players.append(Player(player['x'], player['y'], 64, 64))
+            other_players.append(Player(int(player['x']), int(player['y']), 64, 64))
         set_other_players(other_players)

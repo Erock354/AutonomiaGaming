@@ -11,7 +11,7 @@ pygame.display.set_caption("IDK MAN")
 HEIGHT = 500
 WIDTH = 500
 PLAYER_VEL = 5
-FPS = 180
+FPS = 60
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode([HEIGHT, WIDTH])
 other_players = []

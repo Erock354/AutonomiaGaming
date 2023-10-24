@@ -1,6 +1,7 @@
 import json
 import threading
 import socket
+from time import sleep
 
 PORT = 5054
 SERVER = "192.168.124.161"
@@ -45,6 +46,7 @@ def handle_client(conn, addr):
 def send_data(conn, addr):
     try:
         while conn:
+            sleep(100/1000)
             data = json.dumps(players)
             conn.send(bytes(data, encoding="utf-8"))
     finally:
