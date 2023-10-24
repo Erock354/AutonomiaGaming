@@ -11,7 +11,7 @@ pygame.display.set_caption("IDK MAN")
 HEIGHT = 500
 WIDTH = 500
 PLAYER_VEL = 5
-FPS = 60
+FPS = 180
 clock = pygame.time.Clock()
 
 screen = pygame.display.set_mode([HEIGHT, WIDTH])
@@ -65,7 +65,7 @@ def main():
     block_size = 64
     player = Player(100, 64, block_size, block_size)
 
-    connection = connect()
+    threads = connect(player)
 
     floor = [Block(i * block_size, HEIGHT - block_size, block_size) for i in
              range(-WIDTH // block_size, WIDTH * 2 // block_size)]
@@ -74,7 +74,7 @@ def main():
 
     while running:
         clock.tick(FPS)
-        send(connection, player)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -85,7 +85,7 @@ def main():
         player.loop(FPS)
         handle_movement(player, objects)
         draw(win=screen, player=player, objects=objects)
-
+        
     pygame.quit()
 
 

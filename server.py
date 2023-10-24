@@ -1,9 +1,9 @@
-import pickle
+import json
 import threading
 import socket
 
-PORT = 5050
-SERVER = "192.168.134.161"
+PORT = 5054
+SERVER = "192.168.124.161"
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -19,32 +19,39 @@ players = []
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} Connected")
-    players.append({"addr": addr[0], "x": None, "y": None})
+    joined_p = {"addr": addr[0], "x": None, "y": None}
+    players.append(joined_p)
     try:
-        full_msg = b''
         connected = True
         while connected:
-            msg = conn.recv(1024)
-            if not msg:
-                break
+            data = conn.recv(1024)
+            data = data.decode("utf-8")
+            data = json.loads(data)
 
-            full_msg += msg
-            player_data = pickle.loads(full_msg[HEADERSIZE:])
-            full_msg = b""
+            print(data['x'])
 
             for player in players:
-                if player['addr'] == player_data['addr']:
-                    player['x'] = player_data['x']
-                    player['y'] = player_data['y']
+                if player['addr'] == data['addr']:
+                    player['x'] = data['x']
+                    player['y'] = data['y']
 
-            msg = pickle.dumps(players)
-            msg = bytes(f"{len(msg):<{HEADERSIZE}}", 'utf-8') + msg
-            server.send(msg)
+            print(players, "\n")
 
     finally:
         with clients_lock:
+            players.remove(joined_p)
             clients.remove(conn)
+        conn.close()
 
+
+def send_data(conn, addr):
+    try:
+        while conn:
+            data = json.dumps(players)
+            conn.send(bytes(data, encoding="utf-8"))
+    finally:
+        with clients_lock:
+            clients.remove(conn)
         conn.close()
 
 
@@ -57,8 +64,10 @@ def start():
         with clients_lock:
             clients.add(conn)
 
-        thread = threading.Thread(target=handle_client, args=(conn, addr))
-        thread.start()
+        thread1 = threading.Thread(target=handle_client, args=(conn, addr))
+        thread2 = threading.Thread(target=send_data, args=(conn, addr))
+        thread1.start()
+        thread2.start()
 
 
 start()
