@@ -4,12 +4,12 @@ import threading
 from player import *
 
 PORT = 5054
-SERVER = "192.168.10.65"
+SERVER = "192.168.124.161"
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
 HEADERSIZE = 10
-IP = "192.168.10.65"
+IP = "192.168.124.161"
 
 running = True
 online_players = []
@@ -33,9 +33,12 @@ def send(client, player):
         if player_before.rect.x != player.rect.x or player_before.rect.y != player.rect.y:
             player_data = {"addr": IP, "x": player.rect.x, "y": player.rect.y}
             data = json.dumps(player_data)
-            client.send(bytes(data, encoding="utf-8"))
-            player_before.rect.x = player.rect.x
-            player_before.rect.y = player.rect.y
+            try:
+                client.send(bytes(data, encoding="utf-8"))
+                player_before.rect.x = player.rect.x
+                player_before.rect.y = player.rect.y
+            except:
+                pass
 
 
 def receive(conn, sus):
