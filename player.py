@@ -6,6 +6,7 @@ class Player(pygame.sprite.Sprite):
     GRAVITY = 1
 
     def __init__(self, x, y, height, width):
+        super().__init__()
         self.rect = pygame.Rect(x, y, height, width)
         self.x_vel = 0
         self.y_vel = 0
@@ -13,6 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.direction = "left"
         self.fall_count = 0
+        self.addr = None
 
     def jump(self, objects):
         for obj in objects:

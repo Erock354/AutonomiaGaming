@@ -11,19 +11,16 @@ pygame.display.set_caption("IDK MAN")
 HEIGHT = 500
 WIDTH = 500
 PLAYER_VEL = 5
-FPS = 60
+FPS = 180
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode([HEIGHT, WIDTH])
-other_players = []
 
 
-def draw(win, player, other_players, objects):
+def draw(win, other_players, objects):
     screen.fill("white")
 
     for obj in objects:
         obj.draw(win)
-
-    player.draw(win)
 
     for player in other_players:
         player.draw(win)
@@ -64,10 +61,6 @@ def handle_horizontal_collision(player, objects):
     pass
 
 
-def set_other_players(other_players):
-    other_players = other_players
-
-
 def main():
     running = True
     block_size = 64
@@ -92,8 +85,7 @@ def main():
 
         player.loop(FPS)
         handle_movement(player, objects)
-        print("Other: ", other_players)
-        draw(win=screen, player=player, other_players=other_players, objects=objects)
+        draw(win=screen, other_players=online_players, objects=objects)
         
     pygame.quit()
 

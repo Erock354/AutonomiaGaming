@@ -4,7 +4,7 @@ import socket
 from time import sleep
 
 PORT = 5054
-SERVER = "192.168.124.161"
+SERVER = "192.168.10.65"
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -34,8 +34,6 @@ def handle_client(conn, addr):
                     player['x'] = data['x']
                     player['y'] = data['y']
 
-            print(players, "\n")
-
     finally:
         with clients_lock:
             players.remove(joined_p)
@@ -46,9 +44,10 @@ def handle_client(conn, addr):
 def send_data(conn, addr):
     try:
         while conn:
-            sleep(100/1000)
+            sleep(0.01)
             data = json.dumps(players)
             conn.send(bytes(data, encoding="utf-8"))
+            print(data)
     finally:
         with clients_lock:
             clients.remove(conn)

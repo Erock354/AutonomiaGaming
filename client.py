@@ -2,18 +2,18 @@ import json
 import socket
 import threading
 from player import *
-from time import *
-from main import set_other_players
 
 PORT = 5054
-SERVER = "192.168.124.161"
+SERVER = "192.168.10.65"
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
 HEADERSIZE = 10
-IP = socket.gethostbyname(socket.gethostname())
+IP = "192.168.10.65"
 
 running = True
+online_players = []
+addr_online_players = []
 
 
 def connect(player):
@@ -31,7 +31,6 @@ def send(client, player):
     player_before = Player(0, 0, 0, 0)
     while True:
         if player_before.rect.x != player.rect.x or player_before.rect.y != player.rect.y:
-            sleep(1/1000)
             player_data = {"addr": IP, "x": player.rect.x, "y": player.rect.y}
             data = json.dumps(player_data)
             client.send(bytes(data, encoding="utf-8"))
@@ -44,9 +43,22 @@ def receive(conn, sus):
     while True:
         data = conn.recv(1024)
         data = data.decode("utf-8")
+
+        # Contrast overload of data
+        divider = data.find(']')
+        data = data[:divider + 1]
         data = json.loads(data)
-        print(data, "\n")
-        other_players = []
+
         for player in data:
-            other_players.append(Player(int(player['x']), int(player['y']), 64, 64))
-        set_other_players(other_players)
+
+            if player['addr'] not in addr_online_players:
+                addr_online_players.append(player['addr'])
+                new_player = Player(int(player['x']), int(player['y']), 64, 64)
+                new_player.addr = player['addr']
+                online_players.append(new_player)
+
+            for online_player in online_players:
+                if player['addr'] == online_player.addr:
+                    online_player.rect.x = player['x']
+                    online_player.rect.y = player['y']
+                    break
