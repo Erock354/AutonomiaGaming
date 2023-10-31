@@ -4,12 +4,12 @@ import threading
 from player import *
 
 PORT = 5054
-SERVER = "192.168.124.161"
+SERVER = "172.20.10.2"
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
 HEADERSIZE = 10
-IP = "192.168.124.161"
+IP = "172.20.10.2"
 
 running = True
 online_players = []
@@ -48,6 +48,7 @@ def receive(conn, sus):
         data = data.decode("utf-8")
 
         # Contrast overload of data
+
         divider = data.find(']')
         data = data[:divider + 1]
         data = json.loads(data)
