@@ -9,11 +9,11 @@ from player import *
 # HEADERSIZE represents the size of headers in bytes.
 # IP defines the IP address of the client.
 PORT = 5054
-SERVER = "192.168.9.161"
+SERVER = "192.168.10.40"
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 HEADERSIZE = 10
-IP = "192.168.9.38"
+IP = "192.168.10.40"
 
 # List to hold the information of players currently in game
 online_players = []

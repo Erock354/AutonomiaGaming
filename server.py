@@ -5,7 +5,7 @@ from time import sleep
 
 # Server setup: Define the PORT and IP address for the server
 PORT = 5054
-SERVER = "172.20.10.2"
+SERVER = "192.168.10.40"
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 

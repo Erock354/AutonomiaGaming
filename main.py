@@ -1,3 +1,5 @@
+import pygame
+
 from block import Block
 from client import *
 
@@ -51,20 +53,34 @@ def handle_movement(player, objects):
     player.x_vel = 0
     keys = pygame.key.get_pressed()  # Get the list of pressed keys
 
+
+    collide_left = collide(player, objects, -PLAYER_VEL)
+    collide_right = collide(player, objects, PLAYER_VEL)
+
     # Handle left and right player movements
-    if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and not player.rect.left <= 0:
+    if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and not player.rect.left <= 0 and not collide_left:
         player.move_left(PLAYER_VEL)
-    if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and not player.rect.right >= WIDTH:
+    if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and not player.rect.right >= WIDTH and not collide_right:
         player.move_right(PLAYER_VEL)
 
     # Handle player collisions with other game objects
-    handle_horizontal_collision(player, objects)
+    # handle_horizontal_collision(player, objects)
     handle_vertical_collision(player, objects, player.y_vel)
 
 
 # Function to handle horizontal collisions (currently empty)
-def handle_horizontal_collision(player, objects):
-    pass
+def collide (player, objects, dx):
+    player.move(dx, 0)
+    player.update()
+    collided_obj = None
+    for obj in objects:
+        if pygame.sprite.collide_rect(obj, player):
+            collided_obj = obj
+            break
+
+    player.move(-dx, 0)
+    player.update()
+    return collided_obj
 
 
 # The main function that drives the game
