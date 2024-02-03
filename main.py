@@ -88,14 +88,17 @@ def get_font(size):  # Returns Press-Start-2P in the desired size
 
 
 # The main function that drives the game
-def game(ip):
+def game(ip_server, ip_client=None):
     running = True  # Boolean variable to keep track of the game state
     block_size = 64  # Size of the game objects
     player = Player(100, 64, block_size, block_size)  # Create a player instance
 
     # Connect to the server
-    client = Client()
-    client.connect(player, ip)
+    if ip_client:
+        client = Client(ip_client)
+    else:
+        client = Client(ip_server)
+    client.connect(player, ip_server)
 
     # Create the floor for the game
     floor = [Block(i * block_size, HEIGHT - block_size, block_size) for i in
@@ -186,11 +189,13 @@ def join():
         SUBMIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
                                text_input="submit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
-        BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 550),
+        BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 700),
                              text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
-        INPUT_BOX = TextInputBox((WIDTH / 2), 400, 381, get_font(75), "#ffffff")
-        GROUP = pygame.sprite.Group(INPUT_BOX)
+        INPUT_BOX_SERVER = TextInputBox((WIDTH / 2), 400, 381, get_font(75), "#ffffff")
+        INPUT_BOX_CLIENT = TextInputBox((WIDTH / 2), 550, 381, get_font(75), "#ffffff")
+        GROUP_SERVER = pygame.sprite.Group(INPUT_BOX_SERVER)
+        GROUP_CLIENT = pygame.sprite.Group(INPUT_BOX_CLIENT)
         SCREEN.fill("black")
 
         running = True
@@ -200,7 +205,8 @@ def join():
             MENU_MOUSE_POS = pygame.mouse.get_pos()
 
             events = pygame.event.get()
-            GROUP.update(events)
+            GROUP_SERVER.update(events)
+            GROUP_CLIENT.update(events)
 
             for button in [BACK_BUTTON, SUBMIT_BUTTON]:
                 button.change_color(MENU_MOUSE_POS)
@@ -217,10 +223,11 @@ def join():
 
                     if SUBMIT_BUTTON.check_for_input(MENU_MOUSE_POS):
                         running = False
-                        game(INPUT_BOX.text)
+                        game(INPUT_BOX_SERVER.text, INPUT_BOX_CLIENT.text)
 
             SCREEN.blit(MENU_TEXT, MENU_RECT)
-            GROUP.draw(SCREEN)
+            GROUP_SERVER.draw(SCREEN)
+            GROUP_CLIENT.draw(SCREEN)
             pygame.display.update()
 
 

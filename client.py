@@ -5,17 +5,16 @@ import threading
 from player import *
 
 
-class Client:
+class Client():
 
-    def __init__(self):
+    def __init__(self, ip):
         # Specifies port and server IP for the connection.
         # FORMAT is used to define the byte encoding format.
         # HEADERSIZE represents the size of headers in bytes.
         # IP defines the IP address of the client.
         self.PORT = 63425
-        self.HOSTNAME = socket.gethostname()
         # getting the IP address using socket.gethostbyname() method
-        self.IP = socket.gethostbyname(self.HOSTNAME)
+        self.IP = ip
 
         self.FORMAT = "utf-8"
         self.HEADERSIZE = 10
@@ -46,6 +45,7 @@ class Client:
                 player_data = {"addr": self.IP, "x": player.rect.x, "y": player.rect.y}
                 data = json.dumps(player_data)
                 try:
+                    print(data)
                     client.send(bytes(data, encoding="utf-8"))
                     player_before.rect.x = player.rect.x
                     player_before.rect.y = player.rect.y
