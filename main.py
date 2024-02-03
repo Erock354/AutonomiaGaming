@@ -1,25 +1,26 @@
-import pygame
-
 from block import Block
+from button import Button
 from client import *
+from server import Server
+from textInputBox import *
 
 # Initialize pygame and set a title for the window
 pygame.init()
-pygame.display.set_caption("IDK MAN")
+pygame.display.set_caption("")
 
 # Define some global constants like HEIGHT, WIDTH, PLAYER_VEL (player_velocity), FPS (frames_per_second), clock (used
 # for setting game clock), and screen (main game window)
-HEIGHT = 500
-WIDTH = 500
+HEIGHT = 700
+WIDTH = 1000
 PLAYER_VEL = 5
 FPS = 180
-clock = pygame.time.Clock()
-screen = pygame.display.set_mode([HEIGHT, WIDTH])
+CLOCK = pygame.time.Clock()
+SCREEN = pygame.display.set_mode([WIDTH, HEIGHT])
 
 
 # Function to draw the game objects on the game window
 def draw(win, other_players, objects):
-    screen.fill("white")  # Fill the game screen with white color
+    SCREEN.fill("white")  # Fill the game screen with white color
 
     # Draw the static game objects 
     for obj in objects:
@@ -53,7 +54,6 @@ def handle_movement(player, objects):
     player.x_vel = 0
     keys = pygame.key.get_pressed()  # Get the list of pressed keys
 
-
     collide_left = collide(player, objects, -PLAYER_VEL)
     collide_right = collide(player, objects, PLAYER_VEL)
 
@@ -69,7 +69,7 @@ def handle_movement(player, objects):
 
 
 # Function to handle horizontal collisions (currently empty)
-def collide (player, objects, dx):
+def collide(player, objects, dx):
     player.move(dx, 0)
     player.update()
     collided_obj = None
@@ -83,14 +83,19 @@ def collide (player, objects, dx):
     return collided_obj
 
 
+def get_font(size):  # Returns Press-Start-2P in the desired size
+    return pygame.font.Font("assets/font.ttf", size)
+
+
 # The main function that drives the game
-def main():
+def game(ip):
     running = True  # Boolean variable to keep track of the game state
     block_size = 64  # Size of the game objects
     player = Player(100, 64, block_size, block_size)  # Create a player instance
 
     # Connect to the server
-    threads = connect(player)
+    client = Client()
+    client.connect(player, ip)
 
     # Create the floor for the game
     floor = [Block(i * block_size, HEIGHT - block_size, block_size) for i in
@@ -100,7 +105,7 @@ def main():
     objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size)]
 
     while running:
-        clock.tick(FPS)
+        CLOCK.tick(FPS)
 
         # Event handling for game events
         for event in pygame.event.get():
@@ -112,9 +117,151 @@ def main():
 
         player.loop(FPS)  # Call the loop function to update the player's position
         handle_movement(player, objects)  # Call the handle_movement function to handle player movements
-        draw(win=screen, other_players=online_players,
+        draw(win=SCREEN, other_players=client.online_players,
              objects=objects)  # Call the draw function to draw the game objects
 
+    pygame.quit()
+
+
+def start_server(ip):
+    server = Server(ip)
+    thread_server = threading.Thread(target=server.start)
+    thread_server.start()
+
+
+def create():
+    while True:
+        MENU_TEXT = get_font(100).render("CREATE GAME", True, "#ffffff")
+        MENU_RECT = MENU_TEXT.get_rect(center=(WIDTH / 2, 100))
+
+        SUBMIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
+                               text_input="submit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
+
+        BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 550),
+                             text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
+
+        INPUT_BOX = TextInputBox((WIDTH / 2), 400, 381, get_font(75), "#ffffff")
+        GROUP = pygame.sprite.Group(INPUT_BOX)
+        SCREEN.fill("black")
+
+        running = True
+        while running:
+            SCREEN.fill("black")
+            CLOCK.tick(FPS)
+            MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+            events = pygame.event.get()
+            GROUP.update(events)
+
+            for button in [BACK_BUTTON, SUBMIT_BUTTON]:
+                button.change_color(MENU_MOUSE_POS)
+                button.update(SCREEN)
+
+            # Event handling for game events
+            for event in events:
+                if event.type == pygame.QUIT:  # If the user closes the game window
+                    pygame.quit()  # Quit the game
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if BACK_BUTTON.check_for_input(MENU_MOUSE_POS):
+                        running = False
+                        main()
+
+                    if SUBMIT_BUTTON.check_for_input(MENU_MOUSE_POS):
+                        running = False
+                        print("hallo")
+                        start_server(INPUT_BOX.text)
+
+                        game(INPUT_BOX.text)
+
+            SCREEN.blit(MENU_TEXT, MENU_RECT)
+            GROUP.draw(SCREEN)
+            pygame.display.update()
+
+
+def join():
+    while True:
+        MENU_TEXT = get_font(100).render("JOIN GAME", True, "#ffffff")
+        MENU_RECT = MENU_TEXT.get_rect(center=(WIDTH / 2, 100))
+
+        SUBMIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
+                               text_input="submit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
+
+        BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 550),
+                             text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
+
+        INPUT_BOX = TextInputBox((WIDTH / 2), 400, 381, get_font(75), "#ffffff")
+        GROUP = pygame.sprite.Group(INPUT_BOX)
+        SCREEN.fill("black")
+
+        running = True
+        while running:
+            SCREEN.fill("black")
+            CLOCK.tick(FPS)
+            MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+            events = pygame.event.get()
+            GROUP.update(events)
+
+            for button in [BACK_BUTTON, SUBMIT_BUTTON]:
+                button.change_color(MENU_MOUSE_POS)
+                button.update(SCREEN)
+
+            # Event handling for game events
+            for event in events:
+                if event.type == pygame.QUIT:  # If the user closes the game window
+                    pygame.quit()  # Quit the game
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if BACK_BUTTON.check_for_input(MENU_MOUSE_POS):
+                        running = False
+                        main()
+
+                    if SUBMIT_BUTTON.check_for_input(MENU_MOUSE_POS):
+                        running = False
+                        game(INPUT_BOX.text)
+
+            SCREEN.blit(MENU_TEXT, MENU_RECT)
+            GROUP.draw(SCREEN)
+            pygame.display.update()
+
+
+def main():
+    MENU_TEXT = get_font(100).render("HELNA", True, "#ffffff")
+    MENU_RECT = MENU_TEXT.get_rect(center=(WIDTH / 2, 100))
+
+    CREATE_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
+                           text_input="create", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
+    JOIN_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 400),
+                         text_input="join", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
+    QUIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 550),
+                         text_input="quit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
+
+    SCREEN.fill("black")
+    SCREEN.blit(MENU_TEXT, MENU_RECT)
+
+    running = True  # Boolean variable to keep track of the game state
+
+    while running:
+        CLOCK.tick(FPS)
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+        for button in [CREATE_BUTTON, JOIN_BUTTON, QUIT_BUTTON]:
+            button.change_color(MENU_MOUSE_POS)
+            button.update(SCREEN)
+
+        # Event handling for game events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # If the user closes the game window
+                pygame.quit()  # Quit the game
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if CREATE_BUTTON.check_for_input(MENU_MOUSE_POS):
+                    running = False
+                    create()
+                if JOIN_BUTTON.check_for_input(MENU_MOUSE_POS):
+                    join()
+                    running = False
+                if QUIT_BUTTON.check_for_input(MENU_MOUSE_POS):
+                    pygame.quit()
+
+        pygame.display.update()
     pygame.quit()
 
 
