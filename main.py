@@ -10,10 +10,10 @@ pygame.display.set_caption("")
 
 # Define some global constants like HEIGHT, WIDTH, PLAYER_VEL (player_velocity), FPS (frames_per_second), clock (used
 # for setting game clock), and screen (main game window)
-HEIGHT = 700
-WIDTH = 1000
-PLAYER_VEL = 10
-FPS = 60
+HEIGHT = 720
+WIDTH = 1280
+PLAYER_VEL = 8
+FPS = 120
 CLOCK = pygame.time.Clock()
 SCREEN = pygame.display.set_mode([WIDTH, HEIGHT])
 
@@ -91,7 +91,7 @@ def get_font(size):  # Returns Press-Start-2P in the desired size
 def game(ip_server, ip_client=None):
     running = True  # Boolean variable to keep track of the game state
     block_size = 64  # Size of the game objects
-    player = Player(100, 64, block_size, block_size)  # Create a player instance
+    player = Player(64, 64, block_size, block_size)  # Create a player instance
 
     # Connect to the server
     if ip_client:
@@ -105,7 +105,7 @@ def game(ip_server, ip_client=None):
              range(-WIDTH // block_size, WIDTH * 2 // block_size)]  # List comprehension to create the floor
 
     # List of game objects
-    objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size)]
+    objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size), Block(WIDTH-block_size, HEIGHT - block_size * 2, block_size)]
 
     while running:
         CLOCK.tick(FPS)
