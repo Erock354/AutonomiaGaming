@@ -12,8 +12,8 @@ pygame.display.set_caption("")
 # for setting game clock), and screen (main game window)
 HEIGHT = 700
 WIDTH = 1000
-PLAYER_VEL = 5
-FPS = 180
+PLAYER_VEL = 10
+FPS = 60
 CLOCK = pygame.time.Clock()
 SCREEN = pygame.display.set_mode([WIDTH, HEIGHT])
 
@@ -171,9 +171,7 @@ def create():
 
                     if SUBMIT_BUTTON.check_for_input(MENU_MOUSE_POS):
                         running = False
-                        print("hallo")
                         start_server(INPUT_BOX.text)
-
                         game(INPUT_BOX.text)
 
             SCREEN.blit(MENU_TEXT, MENU_RECT)
@@ -223,7 +221,7 @@ def join():
 
                     if SUBMIT_BUTTON.check_for_input(MENU_MOUSE_POS):
                         running = False
-                        game(INPUT_BOX_SERVER.text, INPUT_BOX_CLIENT.text)
+                        game(ip_server=INPUT_BOX_SERVER.text, ip_client=INPUT_BOX_CLIENT.text)
 
             SCREEN.blit(MENU_TEXT, MENU_RECT)
             GROUP_SERVER.draw(SCREEN)

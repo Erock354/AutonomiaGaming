@@ -62,7 +62,7 @@ class Server:
         try:
             # While connections exist, consistently send updated player data to all clients
             while conn:
-                sleep(0.02)  # Sleep for 0.01 seconds to avoid overloading the server
+                sleep(0.01)  # Sleep for 0.01 seconds to avoid overloading the server
                 # print(self.players)
                 data = json.dumps(self.players)
                 conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client

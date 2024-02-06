@@ -1,11 +1,12 @@
 import json
 import socket
 import threading
+from time import sleep
 
 from player import *
 
 
-class Client():
+class Client:
 
     def __init__(self, ip):
         # Specifies port and server IP for the connection.
@@ -45,7 +46,7 @@ class Client():
                 player_data = {"addr": self.IP, "x": player.rect.x, "y": player.rect.y}
                 data = json.dumps(player_data)
                 try:
-                    print(data)
+
                     client.send(bytes(data, encoding="utf-8"))
                     player_before.rect.x = player.rect.x
                     player_before.rect.y = player.rect.y
@@ -79,4 +80,5 @@ class Client():
                     if player['addr'] == online_player.addr:
                         online_player.rect.x = player['x']
                         online_player.rect.y = player['y']
-                        break
+
+            sleep(0.016)
