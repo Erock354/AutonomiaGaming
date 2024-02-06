@@ -105,7 +105,8 @@ def game(ip_server, ip_client=None):
              range(-WIDTH // block_size, WIDTH * 2 // block_size)]  # List comprehension to create the floor
 
     # List of game objects
-    objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size), Block(WIDTH-block_size, HEIGHT - block_size * 2, block_size)]
+    objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size),
+               Block(WIDTH - block_size, HEIGHT - block_size * 2, block_size)]
 
     while running:
         CLOCK.tick(FPS)
@@ -133,115 +134,130 @@ def start_server(ip):
 
 
 def create():
-    while True:
-        MENU_TEXT = get_font(100).render("CREATE GAME", True, "#ffffff")
-        MENU_RECT = MENU_TEXT.get_rect(center=(WIDTH / 2, 100))
+    # Render title for the menu
+    MENU_TEXT = get_font(100).render("CREATE GAME", True, "#ffffff")
+    MENU_RECT = MENU_TEXT.get_rect(center=(WIDTH / 2, 100))
 
-        SUBMIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
-                               text_input="submit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
+    # Create buttons for submit and back actions
+    SUBMIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
+                           text_input="submit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
-        BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 500),
-                             text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
+    # Create input boxes for server and client IP addresses
+    BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 500),
+                         text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
-        INPUT_BOX = TextInputBox((WIDTH / 2), 375, 381, get_font(75), "#ffffff")
-        GROUP = pygame.sprite.Group(INPUT_BOX)
+    # Create input boxes for server and client IP addresses
+    INPUT_BOX = TextInputBox((WIDTH / 2), 375, 381, get_font(75), "#ffffff")
+    GROUP = pygame.sprite.Group(INPUT_BOX)  # Sprite group to manage the input box
+
+    running = True
+    while running:  # Loop for handling events and updating display
         SCREEN.fill("black")
+        CLOCK.tick(FPS)
+        # Getting the current mouse position
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        running = True
-        while running:
-            SCREEN.fill("black")
-            CLOCK.tick(FPS)
-            MENU_MOUSE_POS = pygame.mouse.get_pos()
+        # Handling events for the input box
+        events = pygame.event.get()
+        GROUP.update(events)
 
-            events = pygame.event.get()
-            GROUP.update(events)
+        # Updating the colors and appearance of buttons based on mouse position
+        for button in [BACK_BUTTON, SUBMIT_BUTTON]:
+            button.change_color(MENU_MOUSE_POS)
+            button.update(SCREEN)
 
-            for button in [BACK_BUTTON, SUBMIT_BUTTON]:
-                button.change_color(MENU_MOUSE_POS)
-                button.update(SCREEN)
+        # Event handling for game events
+        for event in events:
+            # Quitting the game if the user closes the game window
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            # Handling mouse button clicks
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # Checking if the back button is clicked
+                if BACK_BUTTON.check_for_input(MENU_MOUSE_POS):
+                    # Exiting the 'create' function and returning to the main menu
+                    running = False
+                    main()
 
-            # Event handling for game events
-            for event in events:
-                if event.type == pygame.QUIT:  # If the user closes the game window
-                    pygame.quit()  # Quit the game
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if BACK_BUTTON.check_for_input(MENU_MOUSE_POS):
-                        running = False
-                        main()
+                # Checking if the submit button is clicked
+                if SUBMIT_BUTTON.check_for_input(MENU_MOUSE_POS):
+                    # Exiting the 'create' function and starting the server
+                    # and the game with the input box text as an argument
+                    running = False
+                    start_server(INPUT_BOX.text)
+                    game(INPUT_BOX.text)
 
-                    if SUBMIT_BUTTON.check_for_input(MENU_MOUSE_POS):
-                        running = False
-                        start_server(INPUT_BOX.text)
-                        game(INPUT_BOX.text)
-
-            SCREEN.blit(MENU_TEXT, MENU_RECT)
-            GROUP.draw(SCREEN)
-            pygame.display.update()
+        SCREEN.blit(MENU_TEXT, MENU_RECT)  # Draw menu text
+        GROUP.draw(SCREEN)  # Draw client input box
+        pygame.display.update()  # Update display
 
 
 def join():
-    while True:
+    while True:  # Continuous loop until an action breaks it
+        # Render title for the menu
         MENU_TEXT = get_font(100).render("JOIN GAME", True, "#ffffff")
         MENU_RECT = MENU_TEXT.get_rect(center=(WIDTH / 2, 100))
 
+        # Create buttons for submit and back actions
         SUBMIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
                                text_input="submit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
-
         BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 625),
                              text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
+        # Create input boxes for server and client IP addresses
         INPUT_BOX_SERVER = TextInputBox((WIDTH / 2), 375, 381, get_font(75), "#ffffff")
         INPUT_BOX_CLIENT = TextInputBox((WIDTH / 2), 500, 381, get_font(75), "#ffffff")
-        GROUP_SERVER = pygame.sprite.Group(INPUT_BOX_SERVER)
-        GROUP_CLIENT = pygame.sprite.Group(INPUT_BOX_CLIENT)
-        SCREEN.fill("black")
+        GROUP_SERVER = pygame.sprite.Group(INPUT_BOX_SERVER)  # Group for server input box
+        GROUP_CLIENT = pygame.sprite.Group(INPUT_BOX_CLIENT)  # Group for client input box
+        SCREEN.fill("black")  # Clear the screen
 
         running = True
-        while running:
-            SCREEN.fill("black")
-            CLOCK.tick(FPS)
-            MENU_MOUSE_POS = pygame.mouse.get_pos()
+        while running:  # Loop for handling events and updating display
+            SCREEN.fill("black")  # Clear the screen
+            CLOCK.tick(FPS)  # Limit frame rate
+            MENU_MOUSE_POS = pygame.mouse.get_pos()  # Get mouse position
 
-            events = pygame.event.get()
-            GROUP_SERVER.update(events)
-            GROUP_CLIENT.update(events)
+            events = pygame.event.get()  # Get all events
+            GROUP_SERVER.update(events)  # Update server input box
+            GROUP_CLIENT.update(events)  # Update client input box
 
             for button in [BACK_BUTTON, SUBMIT_BUTTON]:
-                button.change_color(MENU_MOUSE_POS)
-                button.update(SCREEN)
+                button.change_color(MENU_MOUSE_POS)  # Change button color if mouse hovers over it
+                button.update(SCREEN)  # Update button on the screen
 
             # Event handling for game events
             for event in events:
                 if event.type == pygame.QUIT:  # If the user closes the game window
                     pygame.quit()  # Quit the game
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if BACK_BUTTON.check_for_input(MENU_MOUSE_POS):
-                        running = False
-                        main()
+                if event.type == pygame.MOUSEBUTTONDOWN:  # If mouse button is clicked
+                    if BACK_BUTTON.check_for_input(MENU_MOUSE_POS):  # If back button is clicked
+                        running = False  # Stop the loop
+                        main()  # Go back to the main menu
 
-                    if SUBMIT_BUTTON.check_for_input(MENU_MOUSE_POS):
-                        running = False
-                        game(ip_server=INPUT_BOX_SERVER.text, ip_client=INPUT_BOX_CLIENT.text)
+                    if SUBMIT_BUTTON.check_for_input(MENU_MOUSE_POS):  # If submit button is clicked
+                        running = False  # Stop the loop
+                        game(ip_server=INPUT_BOX_SERVER.text, ip_client=INPUT_BOX_CLIENT.text)  # Start the game
 
-            SCREEN.blit(MENU_TEXT, MENU_RECT)
-            GROUP_SERVER.draw(SCREEN)
-            GROUP_CLIENT.draw(SCREEN)
-            pygame.display.update()
+            SCREEN.blit(MENU_TEXT, MENU_RECT)  # Draw menu text
+            GROUP_SERVER.draw(SCREEN)  # Draw server input box
+            GROUP_CLIENT.draw(SCREEN)  # Draw client input box
+            pygame.display.update()  # Update display
 
 
 def main():
+    # Render title for the menu
     MENU_TEXT = get_font(100).render("HELNA", True, "#ffffff")
     MENU_RECT = MENU_TEXT.get_rect(center=(WIDTH / 2, 100))
 
+    # Create buttons for redirect to the other pages
     CREATE_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
                            text_input="create", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
     JOIN_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 375),
                          text_input="join", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
     QUIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 500),
                          text_input="quit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
-
-    SCREEN.fill("black")
-    SCREEN.blit(MENU_TEXT, MENU_RECT)
+    SCREEN.fill("black")  # Clear the screen
+    SCREEN.blit(MENU_TEXT, MENU_RECT)  # Draw the title
 
     running = True  # Boolean variable to keep track of the game state
 
@@ -253,18 +269,24 @@ def main():
             button.update(SCREEN)
 
         # Event handling for game events
-        for event in pygame.event.get():
+        for event in pygame.event.get():  # Iterate through all events in the Pygame event queue
             if event.type == pygame.QUIT:  # If the user closes the game window
                 pygame.quit()  # Quit the game
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if CREATE_BUTTON.check_for_input(MENU_MOUSE_POS):
-                    running = False
-                    create()
-                if JOIN_BUTTON.check_for_input(MENU_MOUSE_POS):
-                    join()
-                    running = False
-                if QUIT_BUTTON.check_for_input(MENU_MOUSE_POS):
-                    pygame.quit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:  # If a mouse button is pressed
+                if CREATE_BUTTON.check_for_input(
+                        MENU_MOUSE_POS):  # Check if the mouse click is within the bounds of the CREATE_BUTTON
+                    create()  # Opens the create game menu
+                    running = False  # Stop the game loop
+
+                if JOIN_BUTTON.check_for_input(
+                        MENU_MOUSE_POS):  # Check if the mouse click is within the bounds of the JOIN_BUTTON
+                    join()  # Opens the join game menu
+                    running = False  # Stop the game loop
+
+                if QUIT_BUTTON.check_for_input(
+                        MENU_MOUSE_POS):  # Check if the mouse click is within the bounds of the QUIT_BUTTON
+                    pygame.quit()  # Quit the game
 
         pygame.display.update()
     pygame.quit()
