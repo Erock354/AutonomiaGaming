@@ -140,10 +140,10 @@ def create():
         SUBMIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
                                text_input="submit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
-        BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 550),
+        BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 500),
                              text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
-        INPUT_BOX = TextInputBox((WIDTH / 2), 400, 381, get_font(75), "#ffffff")
+        INPUT_BOX = TextInputBox((WIDTH / 2), 375, 381, get_font(75), "#ffffff")
         GROUP = pygame.sprite.Group(INPUT_BOX)
         SCREEN.fill("black")
 
@@ -187,11 +187,11 @@ def join():
         SUBMIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
                                text_input="submit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
-        BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 700),
+        BACK_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 625),
                              text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
-        INPUT_BOX_SERVER = TextInputBox((WIDTH / 2), 400, 381, get_font(75), "#ffffff")
-        INPUT_BOX_CLIENT = TextInputBox((WIDTH / 2), 550, 381, get_font(75), "#ffffff")
+        INPUT_BOX_SERVER = TextInputBox((WIDTH / 2), 375, 381, get_font(75), "#ffffff")
+        INPUT_BOX_CLIENT = TextInputBox((WIDTH / 2), 500, 381, get_font(75), "#ffffff")
         GROUP_SERVER = pygame.sprite.Group(INPUT_BOX_SERVER)
         GROUP_CLIENT = pygame.sprite.Group(INPUT_BOX_CLIENT)
         SCREEN.fill("black")
@@ -235,9 +235,9 @@ def main():
 
     CREATE_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 250),
                            text_input="create", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
-    JOIN_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 400),
+    JOIN_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 375),
                          text_input="join", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
-    QUIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 550),
+    QUIT_BUTTON = Button(image=pygame.image.load("assets/image.png"), pos=(WIDTH / 2, 500),
                          text_input="quit", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
     SCREEN.fill("black")
