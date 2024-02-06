@@ -34,7 +34,7 @@ class Server:
             connected = True  # Setting the connection to true
             while connected:
                 # While the connection is set to true, the server stays connected & receiving data from the client
-                data = conn.recv(1024 * 10)  # The amount of data in bytes that the server will receive
+                data = conn.recv(1024)  # The amount of data in bytes that the server will receive
                 data = data.decode("utf-8")  # The decoding format of the data
                 # Handling possible data overflow by splitting the data into a list of strings
                 data = data.split('}')
@@ -62,7 +62,7 @@ class Server:
         try:
             # While connections exist, consistently send updated player data to all clients
             while conn:
-                sleep(0.01)  # Sleep for 0.01 seconds to avoid overloading the server
+                sleep(0.008)  # Sleep for 0.01 seconds to avoid overloading the server
                 # print(self.players)
                 data = json.dumps(self.players)
                 conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client

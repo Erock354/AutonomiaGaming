@@ -52,6 +52,7 @@ class Client:
                     player_before.rect.y = player.rect.y
                 except:
                     pass
+            sleep(0.008)
 
     # Function to receive data - updates on all players from the server
     # Handles network issues gracefully by failing silently
@@ -81,4 +82,4 @@ class Client:
                         online_player.rect.x = player['x']
                         online_player.rect.y = player['y']
 
-            sleep(0.016)
+            sleep(0.008)

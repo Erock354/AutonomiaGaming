@@ -5,7 +5,7 @@ import pygame
 class Player(pygame.sprite.Sprite):
     # Set a color and gravity constant for Player
     COLOR = (255, 0, 0)
-    GRAVITY = 1
+    GRAVITY = 2
 
     # Initialize a Player object with specified x, y coordinates and height and width of the player. Sets velocity
     # attributes on x and y coordinates to 0
