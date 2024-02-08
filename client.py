@@ -40,10 +40,10 @@ class Client:
     # Function to send data of the relevant player to the server
     # Sends data anytime when the player's coordinates are changed
     def send(self, client, player):
-        player_before = Player(0, 0, 0, 0)
+        player_before = Player(0, 0, 0, 0, "white")
         while True:
             if player_before.rect.x != player.rect.x or player_before.rect.y != player.rect.y:
-                player_data = {"addr": self.IP, "x": player.rect.x, "y": player.rect.y}
+                player_data = {"addr": self.IP, "x": player.rect.x, "y": player.rect.y, "color": player.color}
                 data = json.dumps(player_data)
                 try:
 
@@ -72,7 +72,8 @@ class Client:
                 if player['addr'] not in self.addr_online_players:
                     self.addr_online_players.append(player['addr'])  # Add the player's address to the list of online
                     # players
-                    new_player = Player(int(player['x']), int(player['y']), 64, 64)  # Create a new player instance
+                    new_player = Player(int(player['x']), int(player['y']), 64, 64, player['color'])  # Create a new
+                    # player instance
                     new_player.addr = player['addr']  # Set the player's address
                     self.online_players.append(new_player)  # Add the player to the list of online players
 

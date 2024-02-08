@@ -4,13 +4,13 @@ import pygame
 # Define a Player class that inherits pygame's Sprite class
 class Player(pygame.sprite.Sprite):
     # Set a color and gravity constant for Player
-    COLOR = (255, 0, 0)
     GRAVITY = 2
 
     # Initialize a Player object with specified x, y coordinates and height and width of the player. Sets velocity
     # attributes on x and y coordinates to 0
-    def __init__(self, x, y, height, width):
+    def __init__(self, x, y, height, width, color):
         super().__init__()
+        self.color = color
         self.rect = pygame.Rect(x, y, height, width)
         self.x_vel = 0
         self.y_vel = 0
@@ -51,7 +51,7 @@ class Player(pygame.sprite.Sprite):
 
     # Draw Player on the game screen
     def draw(self, win):
-        pygame.draw.rect(win, self.COLOR, self.rect)
+        pygame.draw.rect(win, self.color, self.rect)
 
     # Function to update Player state when they land from a jump
     def landed(self):
@@ -62,3 +62,6 @@ class Player(pygame.sprite.Sprite):
     def hit_head(self):
         self.fall_count = 0
         self.y_vel *= -1
+
+    def shoot(self):
+        pass

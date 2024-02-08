@@ -2,7 +2,7 @@ import pygame
 
 
 class TextInputBox(pygame.sprite.Sprite):
-    def __init__(self, x, y, w, font, color):
+    def __init__(self, x, y, w, font, color, placeholder=None):
         """
         Initialize TextInputBox attributes.
 
@@ -12,30 +12,42 @@ class TextInputBox(pygame.sprite.Sprite):
             w (int): The width of the box.
             font (pygame.font.Font): The font used for rendering text.
             color (str): The color of the text.
+            placeholder (str): The default text.
         """
         super().__init__()
         self.color = color
         self.backcolor = "black"  # Background color of the text box
         self.boxcolor = "#2C2F33"  # Border color of the text box
+        self.boxcolor_active = "white"  # Border color of the text box when the box is active
         self.pos = (x, y)  # Position of the text box
         self.width = w  # Width of the text box
         self.font = font  # Font used for rendering text
         self.active = False  # Flag to indicate if the text box is active
-        self.text = ""  # Text entered into the text box
+        self.text = ""
+        if placeholder:
+            self.text = placeholder
         self.render_text()  # Render the initial text
 
     def render_text(self):
         """
         Render the text onto the text box surface.
         """
-        # Render the text surface
+
+        # Render the text surface white
         t_surf = self.font.render(self.text, True, self.color, self.backcolor)
+
         # Create a surface for the text box
         self.image = pygame.Surface((max(self.width, t_surf.get_width()), t_surf.get_height()), pygame.SRCALPHA)
         # Blit the text onto the text box surface
         self.image.blit(t_surf, (0, 0))
-        # Draw the border of the text box
-        pygame.draw.rect(self.image, self.boxcolor, self.image.get_rect(), 2)
+
+        if not self.active:
+            # Draw the border of the text box
+            pygame.draw.rect(self.image, self.boxcolor, self.image.get_rect(), 2)
+        else:
+            # Draw the border of the text box
+            pygame.draw.rect(self.image, self.boxcolor_active, self.image.get_rect(), 2)
+
         # Set the position of the text box
         self.rect = self.image.get_rect(center=self.pos)
 
@@ -49,9 +61,9 @@ class TextInputBox(pygame.sprite.Sprite):
         # Iterate through the list of events
         for event in event_list:
             # Check for mouse button press event and if the text box is not active
-            if event.type == pygame.MOUSEBUTTONDOWN and not self.active:
+            if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
                 # Activate the text box if the mouse click is within the text box boundary
-                self.active = self.rect.collidepoint(event.pos)
+                self.active = not self.active
             # Check for keyboard key press event and if the text box is active
             if event.type == pygame.KEYDOWN and self.active:
                 # Handle key presses
@@ -64,5 +76,5 @@ class TextInputBox(pygame.sprite.Sprite):
                 else:
                     # Add the character corresponding to the key press to the text
                     self.text += event.unicode
-                # Re-render the text box with the updated text
-                self.render_text()
+            # Re-render the text box with the updated text
+            self.render_text()

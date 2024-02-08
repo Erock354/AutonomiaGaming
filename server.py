@@ -28,7 +28,7 @@ class Server:
     def handle_client(self, conn, addr):
         print(f"[NEW CONNECTION]: {addr} Connected")  # Message for every new connection
         joined_p = {"addr": addr[0], "x": None,
-                    "y": None}  # Initializing a new player object containing the client address
+                    "y": None, "color": None}  # Initializing a new player object containing the client address
         self.players.append(joined_p)  # Appending the player object to the list of players
         try:
             connected = True  # Setting the connection to true
@@ -50,6 +50,7 @@ class Server:
                         if player['addr'] == d['addr']:
                             player['x'] = d['x']
                             player['y'] = d['y']
+                            player['color'] = d['color']
         finally:
             # If the connection is lost, remove the player and connection from their respective tracking structures
             with self.clients_lock:

@@ -91,7 +91,7 @@ def get_font(size):  # Returns Press-Start-2P in the desired size
 def game(ip_server, ip_client=None):
     running = True  # Boolean variable to keep track of the game state
     block_size = 64  # Size of the game objects
-    player = Player(64, 64, block_size, block_size)  # Create a player instance
+    player = Player(64, 64, block_size, block_size, "red")  # Create a player instance
 
     # Connect to the server
     if ip_client:
@@ -118,6 +118,9 @@ def game(ip_server, ip_client=None):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     player.jump(objects=objects)  # Call the jump function if the user presses the spacebar
+
+            if pygame.mouse.get_pressed() == (1, 0, 0):  # Shoot when mouse left click
+                player.shoot()
 
         player.loop(FPS)  # Call the loop function to update the player's position
         handle_movement(player, objects)  # Call the handle_movement function to handle player movements
@@ -147,7 +150,7 @@ def create():
                          text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
     # Create input boxes for server and client IP addresses
-    INPUT_BOX = TextInputBox((WIDTH / 2), 375, 381, get_font(75), "#ffffff")
+    INPUT_BOX = TextInputBox((WIDTH / 2), 375, 381, get_font(75), "#ffffff", "host ip")
     GROUP = pygame.sprite.Group(INPUT_BOX)  # Sprite group to manage the input box
 
     running = True
@@ -205,8 +208,8 @@ def join():
                              text_input="back", font=get_font(75), base_color="#ffffff", hovering_color="#FF69B4")
 
         # Create input boxes for server and client IP addresses
-        INPUT_BOX_SERVER = TextInputBox((WIDTH / 2), 375, 381, get_font(75), "#ffffff")
-        INPUT_BOX_CLIENT = TextInputBox((WIDTH / 2), 500, 381, get_font(75), "#ffffff")
+        INPUT_BOX_SERVER = TextInputBox((WIDTH / 2), 375, 381, get_font(75), "#ffffff", "host ip")
+        INPUT_BOX_CLIENT = TextInputBox((WIDTH / 2), 500, 381, get_font(75), "#ffffff", "client ip")
         GROUP_SERVER = pygame.sprite.Group(INPUT_BOX_SERVER)  # Group for server input box
         GROUP_CLIENT = pygame.sprite.Group(INPUT_BOX_CLIENT)  # Group for client input box
         SCREEN.fill("black")  # Clear the screen
