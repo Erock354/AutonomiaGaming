@@ -44,13 +44,20 @@ class Server:
                 json_data = []
                 for d in data:
                     json_data.append(json.loads(d))
-                # For each JSON object, check the client's address and update player's coordinates if there's a match
-                for d in json_data:
-                    for player in self.players:
-                        if player['addr'] == d['addr']:
-                            player['x'] = d['x']
-                            player['y'] = d['y']
-                            player['color'] = d['color']
+
+                if json_data[0]["obj"] == "player":
+                    # For each JSON object, check the client's address and update player's coordinates if there's a
+                    # match
+                    for d in json_data:
+                        for player in self.players:
+                            if player['addr'] == d['addr']:
+                                player['x'] = d['x']
+                                player['y'] = d['y']
+                                player['color'] = d['color']
+
+                if json_data[0]["obj"] == "bullet":
+                    print(json_data)
+
         finally:
             # If the connection is lost, remove the player and connection from their respective tracking structures
             with self.clients_lock:

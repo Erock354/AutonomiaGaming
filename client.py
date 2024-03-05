@@ -2,13 +2,12 @@ import json
 import socket
 import threading
 from time import sleep
-
-from player import *
+from player import Player
 
 
 class Client:
 
-    def __init__(self, ip):
+    def __init__(self, ip, player):
         # Specifies port and server IP for the connection.
         # FORMAT is used to define the byte encoding format.
         # HEADERSIZE represents the size of headers in bytes.
@@ -25,41 +24,52 @@ class Client:
         # List to hold addresses of players currently in game
         self.addr_online_players = []
 
+        # Binding socket and establish connection
+        ADDR = (ip, self.PORT)
+        self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Creates a TCP socket
+        self.conn.connect(ADDR)  # Connects to the server
+
+        # Reference to the player
+        self.player = player
+
     # Makes a connection to the defined server using the socket module
     def connect(self, player, ip):
-        ADDR = (ip, self.PORT)
-        conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Creates a TCP socket
-        conn.connect(ADDR)  # Connects to the server
-
         # It starts two threads; one to send player data to the server, and another to receive data from the server
-        thread1 = threading.Thread(target=self.send, args=(conn, player), daemon=True)
-        thread2 = threading.Thread(target=self.receive, args=(conn, None), daemon=True)
+        thread1 = threading.Thread(target=self.send, daemon=True)
+        thread2 = threading.Thread(target=self.receive, daemon=True)
         thread1.start()
         thread2.start()
 
     # Function to send data of the relevant player to the server
     # Sends data anytime when the player's coordinates are changed
-    def send(self, client, player):
+    def send(self):
         player_before = Player(0, 0, 0, 0, "white")
         while True:
-            if player_before.rect.x != player.rect.x or player_before.rect.y != player.rect.y:
-                player_data = {"addr": self.IP, "x": player.rect.x, "y": player.rect.y, "color": player.color}
+            if player_before.rect.x != self.player.rect.x or player_before.rect.y != self.player.rect.y:
+                player_data = {"obj": "player", "addr": self.IP, "x": self.player.rect.x, "y": self.player.rect.y, "color": self.player.color}
                 data = json.dumps(player_data)
                 try:
-
-                    client.send(bytes(data, encoding="utf-8"))
-                    player_before.rect.x = player.rect.x
-                    player_before.rect.y = player.rect.y
+                    self.conn.send(bytes(data, encoding="utf-8"))
+                    player_before.rect.x = self.player.rect.x
+                    player_before.rect.y = self.player.rect.y
                 except:
                     pass
             sleep(0.008)
 
+    def send_bullet(self, bullet):
+        bullet_data = {"obj": "bullet", "x": bullet.x, "y": bullet.y, "angle": bullet.angle, "dmg": bullet.dmg}
+        data = json.dumps(bullet_data)
+        try:
+            self.conn.send(bytes(data, encoding="utf-8"))
+        except:
+            pass
+
     # Function to receive data - updates on all players from the server
     # Handles network issues gracefully by failing silently
-    def receive(self, conn, sus):
+    def receive(self):
         print("RECEIVING DATA")
         while True:
-            data = conn.recv(1024)
+            data = self.conn.recv(1024)
             data = data.decode("utf-8")
 
             # Handles cases of data overflow

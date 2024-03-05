@@ -3,6 +3,7 @@ from button import Button
 from client import *
 from server import Server
 from textInputBox import *
+from player import *
 
 # Initialize pygame and set a title for the window
 pygame.init()
@@ -19,7 +20,7 @@ SCREEN = pygame.display.set_mode([WIDTH, HEIGHT])
 
 
 # Function to draw the game objects on the game window
-def draw(win, other_players, objects):
+def draw(win, other_players, objects, bullets):
     SCREEN.fill("white")  # Fill the game screen with white color
 
     # Draw the static game objects 
@@ -29,6 +30,9 @@ def draw(win, other_players, objects):
     # Draw the online players on the screen
     for player in other_players:
         player.draw(win)
+
+    for bullet in bullets:
+        bullet.draw(win)
 
     # Update the game display after drawing the objects
     pygame.display.update()
@@ -91,13 +95,13 @@ def get_font(size):  # Returns Press-Start-2P in the desired size
 def game(ip_server, ip_client=None):
     running = True  # Boolean variable to keep track of the game state
     block_size = 64  # Size of the game objects
-    player = Player(64, 64, block_size, block_size, "red")  # Create a player instance
+    player = Player(64, HEIGHT-64, block_size, block_size, "red")  # Create a player instance
 
     # Connect to the server
     if ip_client:
-        client = Client(ip_client)
+        client = Client(ip_client, player)
     else:
-        client = Client(ip_server)
+        client = Client(ip_server, player)
     client.connect(player, ip_server)
 
     # Create the floor for the game
@@ -107,6 +111,8 @@ def game(ip_server, ip_client=None):
     # List of game objects
     objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size),
                Block(WIDTH - block_size, HEIGHT - block_size * 2, block_size)]
+
+    bullets = []
 
     while running:
         CLOCK.tick(FPS)
@@ -120,12 +126,17 @@ def game(ip_server, ip_client=None):
                     player.jump(objects=objects)  # Call the jump function if the user presses the spacebar
 
             if pygame.mouse.get_pressed() == (1, 0, 0):  # Shoot when mouse left click
-                player.shoot()
+                player.shoot(client)
+
+        for bullet in bullets:
+            bullet.update(SCREEN)
+            if bullet.rect.x < 0 or bullet.rect.x > SCREEN.get_width() or bullet.rect.y < 0 or bullet.rect.y > SCREEN.get_height():
+                bullets.remove(bullet)
 
         player.loop(FPS)  # Call the loop function to update the player's position
         handle_movement(player, objects)  # Call the handle_movement function to handle player movements
         draw(win=SCREEN, other_players=client.online_players,
-             objects=objects)  # Call the draw function to draw the game objects
+             objects=objects, bullets=bullets)  # Call the draw function to draw the game objects
 
     pygame.quit()
 
