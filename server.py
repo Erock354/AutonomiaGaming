@@ -82,9 +82,13 @@ class Server:
                 data = json.dumps(self.players)
                 conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
 
-                data = json.dumps(self.bullets)
-                conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
-                self.bullets = []
+                if len(self.bullets) > 0:
+                    data = ""
+                    for bullet in self.bullets:
+                        data += json.dumps(bullet)
+                        self.bullets.remove(bullet)
+                    conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
+
         finally:
             # If the connection is lost, remove it from the client tracking structure
             with self.clients_lock:
