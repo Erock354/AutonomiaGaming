@@ -23,6 +23,7 @@ class Server:
         self.clients_lock = threading.Lock()
         self.HEADERSIZE = 10
         self.players = []
+        self.bullets = []
 
     # Handle client connections: Manage client and receive data
     def handle_client(self, conn, addr):
@@ -59,8 +60,7 @@ class Server:
 
                 if json_data[0]["obj"] == "bullet":
                     try:
-                        data = "[" + json.dumps(json_data[0]) + "]"
-                        conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
+                        self.bullets.append(json_data[0])
                     except:
                         print("Send bullet failed!")
 
@@ -81,6 +81,10 @@ class Server:
                 # print(self.players)
                 data = json.dumps(self.players)
                 conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
+
+                data = json.dumps(self.bullets)
+                conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
+                self.bullets = []
         finally:
             # If the connection is lost, remove it from the client tracking structure
             with self.clients_lock:
