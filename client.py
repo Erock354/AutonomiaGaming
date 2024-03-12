@@ -2,6 +2,8 @@ import json
 import socket
 import threading
 from time import sleep
+
+from bullet import Bullet
 from player import Player
 
 
@@ -23,6 +25,9 @@ class Client:
         self.online_players = []
         # List to hold addresses of players currently in game
         self.addr_online_players = []
+        # List of active bullets
+        self.bullets = []
+
 
         # Binding socket and establish connection
         ADDR = (ip, self.PORT)
@@ -78,19 +83,22 @@ class Client:
             data = json.loads(data)
 
             # Upon receiving data of a new player, create a new player instance and add to the list of online players
-            for player in data:
-                if player['addr'] not in self.addr_online_players:
-                    self.addr_online_players.append(player['addr'])  # Add the player's address to the list of online
+            for obj in data:
+                if obj['obj'] == "bullet":
+                    self.bullets.append(Bullet(obj['x'], obj['y'], obj['angle'], obj['dmg']))
+                    break
+                if obj['addr'] not in self.addr_online_players:
+                    self.addr_online_players.append(obj['addr'])  # Add the player's address to the list of online
                     # players
-                    new_player = Player(int(player['x']), int(player['y']), 64, 64, player['color'])  # Create a new
+                    new_player = Player(int(obj['x']), int(obj['y']), 64, 64, obj['color'])  # Create a new
                     # player instance
-                    new_player.addr = player['addr']  # Set the player's address
+                    new_player.addr = obj['addr']  # Set the player's address
                     self.online_players.append(new_player)  # Add the player to the list of online players
 
                 # If received data of an already present player, then update the player's data
                 for online_player in self.online_players:
-                    if player['addr'] == online_player.addr:
-                        online_player.rect.x = player['x']
-                        online_player.rect.y = player['y']
+                    if obj['addr'] == online_player.addr:
+                        online_player.rect.x = obj['x']
+                        online_player.rect.y = obj['y']
 
             sleep(0.008)

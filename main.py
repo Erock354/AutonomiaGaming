@@ -112,8 +112,6 @@ def game(ip_server, ip_client=None):
     objects = [*floor, Block(0, HEIGHT - block_size * 2, block_size),
                Block(WIDTH - block_size, HEIGHT - block_size * 2, block_size)]
 
-    bullets = []
-
     while running:
         CLOCK.tick(FPS)
 
@@ -128,15 +126,15 @@ def game(ip_server, ip_client=None):
             if pygame.mouse.get_pressed() == (1, 0, 0):  # Shoot when mouse left click
                 player.shoot(client)
 
-        for bullet in bullets:
+        for bullet in client.bullets:
             bullet.update(SCREEN)
             if bullet.rect.x < 0 or bullet.rect.x > SCREEN.get_width() or bullet.rect.y < 0 or bullet.rect.y > SCREEN.get_height():
-                bullets.remove(bullet)
+                client.bullets.remove(bullet)
 
         player.loop(FPS)  # Call the loop function to update the player's position
         handle_movement(player, objects)  # Call the handle_movement function to handle player movements
         draw(win=SCREEN, other_players=client.online_players,
-             objects=objects, bullets=bullets)  # Call the draw function to draw the game objects
+             objects=objects, bullets=client.bullets)  # Call the draw function to draw the game objects
 
     pygame.quit()
 

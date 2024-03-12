@@ -27,8 +27,10 @@ class Server:
     # Handle client connections: Manage client and receive data
     def handle_client(self, conn, addr):
         print(f"[NEW CONNECTION]: {addr} Connected")  # Message for every new connection
-        joined_p = {"addr": addr[0], "x": None,
-                    "y": None, "color": None}  # Initializing a new player object containing the client address
+
+        # Initializing a new player object containing the client address
+        joined_p = {"obj": "player", "addr": addr[0], "x": None, "y": None, "color": None}
+
         self.players.append(joined_p)  # Appending the player object to the list of players
         try:
             connected = True  # Setting the connection to true
@@ -56,7 +58,12 @@ class Server:
                                 player['color'] = d['color']
 
                 if json_data[0]["obj"] == "bullet":
-                    print(json_data)
+                    try:
+                        data = "[" + json.dumps(json_data[0]) + "]"
+                        conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
+                    except:
+                        print("Send bullet failed!")
+
 
         finally:
             # If the connection is lost, remove the player and connection from their respective tracking structures
@@ -95,7 +102,6 @@ class Server:
             thread2 = threading.Thread(target=self.send_data, args=(conn, addr))
             thread1.start()
             thread2.start()
-
 
 # server = Server("192.168.10.40")
 # server.start()
