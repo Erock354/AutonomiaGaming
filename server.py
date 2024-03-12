@@ -73,7 +73,7 @@ class Server:
             conn.close()  # Close the connection
 
     # Send data to clients: Handling the sending of current game state to connected clients
-    def send_data(self, conn, addr):
+    def send_player_data(self, conn, addr):
         try:
             # While connections exist, consistently send updated player data to all clients
             while conn:
@@ -82,12 +82,22 @@ class Server:
                 data = json.dumps(self.players)
                 conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
 
+        finally:
+            # If the connection is lost, remove it from the client tracking structure
+            with self.clients_lock:
+                self.clients.remove(conn)
+            conn.close()  # Close the connection
+
+    def send_bullets(self, conn, addr):
+        try:
+            # While connections exist, consistently send updated player data to all clients
+            while conn:
+                sleep(0.008)  # Sleep for 0.01 seconds to avoid overloading the server
+
                 if len(self.bullets) > 0:
-                    data = ""
-                    for bullet in self.bullets:
-                        data += json.dumps(bullet)
-                        self.bullets.remove(bullet)
+                    data = json.dumps(self.bullets)
                     conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
+                    self.bullets = []
 
         finally:
             # If the connection is lost, remove it from the client tracking structure
@@ -107,9 +117,11 @@ class Server:
                 self.clients.add(conn)
             # Start two threads - one for handling incoming data from the client, another for sending data to them
             thread1 = threading.Thread(target=self.handle_client, args=(conn, addr))
-            thread2 = threading.Thread(target=self.send_data, args=(conn, addr))
+            thread2 = threading.Thread(target=self.send_player_data, args=(conn, addr))
+            thread3 = threading.Thread(target=self.send_bullets, args=(conn, addr))
             thread1.start()
             thread2.start()
+            thread3.start()
 
 # server = Server("192.168.10.40")
 # server.start()
