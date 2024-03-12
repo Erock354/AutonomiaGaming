@@ -99,10 +99,10 @@ def game(ip_server, ip_client=None):
 
     # Connect to the server
     if ip_client:
-        client = Client(ip_client, player)
+        client = Client(player, ip_server, ip_client)
     else:
-        client = Client(ip_server, player)
-    client.connect(player, ip_server)
+        client = Client(player, ip_server, ip_server)
+    client.connect()
 
     # Create the floor for the game
     floor = [Block(i * block_size, HEIGHT - block_size, block_size) for i in
