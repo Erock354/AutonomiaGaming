@@ -9,14 +9,15 @@ from player import Player
 
 class Client:
 
-    def __init__(self, ip, player):
+    def __init__(self, player, host_ip, client_ip):
         # Specifies port and server IP for the connection.
         # FORMAT is used to define the byte encoding format.
         # HEADERSIZE represents the size of headers in bytes.
         # IP defines the IP address of the client.
         self.PORT = 63425
         # getting the IP address using socket.gethostbyname() method
-        self.IP = ip
+        self.SERVER_IP = host_ip
+        self.CLIENT_IP = client_ip
 
         self.FORMAT = "utf-8"
         self.HEADERSIZE = 10
@@ -28,9 +29,8 @@ class Client:
         # List of active bullets
         self.bullets = []
 
-
         # Binding socket and establish connection
-        ADDR = (ip, self.PORT)
+        ADDR = (self.SERVER_IP, self.PORT)
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Creates a TCP socket
         self.conn.connect(ADDR)  # Connects to the server
 
@@ -38,7 +38,7 @@ class Client:
         self.player = player
 
     # Makes a connection to the defined server using the socket module
-    def connect(self, player, ip):
+    def connect(self):
         # It starts two threads; one to send player data to the server, and another to receive data from the server
         thread1 = threading.Thread(target=self.send, daemon=True)
         thread2 = threading.Thread(target=self.receive, daemon=True)
@@ -51,7 +51,8 @@ class Client:
         player_before = Player(0, 0, 0, 0, "white")
         while True:
             if player_before.rect.x != self.player.rect.x or player_before.rect.y != self.player.rect.y:
-                player_data = {"obj": "player", "addr": self.IP, "x": self.player.rect.x, "y": self.player.rect.y, "color": self.player.color}
+                player_data = {"obj": "player", "addr": self.CLIENT_IP, "x": self.player.rect.x, "y": self.player.rect.y,
+                               "color": self.player.color}
                 data = json.dumps(player_data)
                 try:
                     self.conn.send(bytes(data, encoding="utf-8"))
