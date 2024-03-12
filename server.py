@@ -95,8 +95,8 @@ class Server:
                 sleep(0.008)  # Sleep for 0.01 seconds to avoid overloading the server
 
                 if len(self.bullets) > 0:
-                    data = json.dumps(self.bullets)
-                    conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
+                    data = json.dumps(self.players)
+                    conn.send(bytes(data, encoding="utf-8"))
                     self.bullets = []
 
         finally:
