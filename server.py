@@ -24,6 +24,7 @@ class Server:
         self.HEADERSIZE = 10
         self.players = []
         self.bullets = []
+        self.lock = threading.Lock()
 
     # Handle client connections: Manage client and receive data
     def handle_client(self, conn, addr):
@@ -59,10 +60,13 @@ class Server:
                                 player['color'] = d['color']
 
                 if json_data[0]["obj"] == "bullet":
+                    self.lock.acquire()
                     try:
                         self.bullets.append(json_data[0])
                     except:
                         print("Send bullet failed!")
+                    finally:
+                        self.lock.release()
 
 
         finally:
@@ -95,9 +99,11 @@ class Server:
                 sleep(0.008)  # Sleep for 0.01 seconds to avoid overloading the server
 
                 if len(self.bullets) > 0:
-                    data = json.dumps(self.players)
+                    self.lock.acquire()
+                    data = json.dumps(self.bullets)
                     conn.send(bytes(data, encoding="utf-8"))
                     self.bullets = []
+                    self.lock.release()
 
         finally:
             # If the connection is lost, remove it from the client tracking structure
@@ -122,6 +128,3 @@ class Server:
             thread1.start()
             thread2.start()
             thread3.start()
-
-# server = Server("192.168.10.40")
-# server.start()
