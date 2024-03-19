@@ -82,7 +82,6 @@ class Client:
             # Handles cases of data overflow
             divider = data.find(']')
             data = data[:divider + 1]
-            print(data)
             data = json.loads(data)
             # Upon receiving data of a new player, create a new player instance and add to the list of online players
             for obj in data:

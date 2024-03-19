@@ -55,6 +55,7 @@ class Server:
                     # match
                     for d in json_data:
                         for player in self.players:
+                            print(d)
                             if player['addr'] == d['addr']:
                                 player['x'] = d['x']
                                 player['y'] = d['y']
