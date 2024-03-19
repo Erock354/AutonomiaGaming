@@ -37,6 +37,7 @@ class Server:
         try:
             connected = True  # Setting the connection to true
             while connected:
+                sleep(0.008)
                 # While the connection is set to true, the server stays connected & receiving data from the client
                 data = conn.recv(1024)  # The amount of data in bytes that the server will receive
                 data = data.decode("utf-8")  # The decoding format of the data
