@@ -76,33 +76,30 @@ class Client:
         while True:
             sleep(0.008)
 
-            data = self.conn.recv(1024)
+            data = self.conn.recv(2048)
             data = data.decode("utf-8")
 
             # Handles cases of data overflow
             divider = data.find(']')
             data = data[:divider + 1]
-            try:
-                data = json.loads(data)
+            print(data)
+            data = json.loads(data)
+            # Upon receiving data of a new player, create a new player instance and add to the list of online players
+            for obj in data:
+                if obj['obj'] == "bullet":
+                    self.bullets.append(Bullet(obj['x'], obj['y'], obj['angle'], obj['dmg']))
+                    break
+                if obj['addr'] not in self.addr_online_players:
+                    self.addr_online_players.append(obj['addr'])  # Add the player's address to the list of online
+                    # players
+                    new_player = Player(int(obj['x']), int(obj['y']), 64, 64, obj['color'])  # Create a new
+                    # player instance
+                    new_player.addr = obj['addr']  # Set the player's address
+                    self.online_players.append(new_player)  # Add the player to the list of online players
+                # If received data of an already present player, then update the player's data
+                for online_player in self.online_players:
+                    if obj['addr'] == online_player.addr:
+                        online_player.rect.x = obj['x']
+                        online_player.rect.y = obj['y']
 
-                # Upon receiving data of a new player, create a new player instance and add to the list of online players
-                for obj in data:
-                    if obj['obj'] == "bullet":
-                        self.bullets.append(Bullet(obj['x'], obj['y'], obj['angle'], obj['dmg']))
-                        break
-                    if obj['addr'] not in self.addr_online_players:
-                        self.addr_online_players.append(obj['addr'])  # Add the player's address to the list of online
-                        # players
-                        new_player = Player(int(obj['x']), int(obj['y']), 64, 64, obj['color'])  # Create a new
-                        # player instance
-                        new_player.addr = obj['addr']  # Set the player's address
-                        self.online_players.append(new_player)  # Add the player to the list of online players
-
-                    # If received data of an already present player, then update the player's data
-                    for online_player in self.online_players:
-                        if obj['addr'] == online_player.addr:
-                            online_player.rect.x = obj['x']
-                            online_player.rect.y = obj['y']
-            finally:
-                pass
 

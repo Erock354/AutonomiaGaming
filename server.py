@@ -39,7 +39,7 @@ class Server:
             while connected:
                 sleep(0.008)
                 # While the connection is set to true, the server stays connected & receiving data from the client
-                data = conn.recv(1024)  # The amount of data in bytes that the server will receive
+                data = conn.recv(2048)  # The amount of data in bytes that the server will receive
                 data = data.decode("utf-8")  # The decoding format of the data
                 # Handling possible data overflow by splitting the data into a list of strings
                 data = data.split('}')
