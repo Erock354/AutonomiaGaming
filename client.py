@@ -100,5 +100,6 @@ class Client:
                     if obj['addr'] == online_player.addr:
                         online_player.rect.x = obj['x']
                         online_player.rect.y = obj['y']
+                        online_player.color = obj['color']
 
 

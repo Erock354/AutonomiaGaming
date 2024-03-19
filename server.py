@@ -31,7 +31,7 @@ class Server:
         print(f"[NEW CONNECTION]: {addr} Connected")  # Message for every new connection
 
         # Initializing a new player object containing the client address
-        joined_p = {"obj": "player", "addr": addr[0], "x": 64, "y": 720-64, "color": "red"}
+        joined_p = {"obj": "player", "addr": addr[0], "x": 64, "y": 720-64, "color": "white"}
 
         self.players.append(joined_p)  # Appending the player object to the list of players
         try:
@@ -55,7 +55,6 @@ class Server:
                     # match
                     for d in json_data:
                         for player in self.players:
-                            print(d)
                             if player['addr'] == d['addr']:
                                 player['x'] = d['x']
                                 player['y'] = d['y']
