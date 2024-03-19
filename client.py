@@ -53,8 +53,8 @@ class Client:
             if player_before.rect.x != self.player.rect.x or player_before.rect.y != self.player.rect.y:
                 player_data = {"obj": "player", "addr": self.CLIENT_IP, "x": self.player.rect.x, "y": self.player.rect.y,
                                "color": self.player.color}
-                data = json.dumps(player_data)
                 try:
+                    data = json.dumps(player_data)
                     self.conn.send(bytes(data, encoding="utf-8"))
                     player_before.rect.x = self.player.rect.x
                     player_before.rect.y = self.player.rect.y
@@ -92,6 +92,7 @@ class Client:
                 if obj['addr'] not in self.addr_online_players:
                     self.addr_online_players.append(obj['addr'])  # Add the player's address to the list of online
                     # players
+                    print(obj)
                     new_player = Player(int(obj['x']), int(obj['y']), 64, 64, obj['color'])  # Create a new
                     # player instance
                     new_player.addr = obj['addr']  # Set the player's address

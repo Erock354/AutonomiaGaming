@@ -31,7 +31,7 @@ class Server:
         print(f"[NEW CONNECTION]: {addr} Connected")  # Message for every new connection
 
         # Initializing a new player object containing the client address
-        joined_p = {"obj": "player", "addr": addr[0], "x": None, "y": None, "color": None}
+        joined_p = {"obj": "player", "addr": addr[0], "x": 64, "y": 720-64, "color": None}
 
         self.players.append(joined_p)  # Appending the player object to the list of players
         try:

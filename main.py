@@ -96,7 +96,6 @@ def game(ip_server, ip_client=None):
     running = True  # Boolean variable to keep track of the game state
     block_size = 64  # Size of the game objects
     player = Player(64, HEIGHT-64, block_size, block_size, "red")  # Create a player instance
-
     # Connect to the server
     if ip_client:
         client = Client(player, ip_server, ip_client)
