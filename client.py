@@ -87,7 +87,6 @@ class Client:
             for obj in data:
                 if obj['obj'] == "bullet":
                     self.bullets.append(Bullet(obj['x'], obj['y'], obj['angle'], obj['dmg']))
-                    print(self.bullets)
                     break
                 if obj['addr'] not in self.addr_online_players:
                     self.addr_online_players.append(obj['addr'])  # Add the player's address to the list of online

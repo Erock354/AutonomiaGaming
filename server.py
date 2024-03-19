@@ -81,10 +81,10 @@ class Server:
         try:
             # While connections exist, consistently send updated player data to all clients
             while conn:
-                sleep(0.008)  # Sleep for 0.01 seconds to avoid overloading the server
                 # print(self.players)
                 data = json.dumps(self.players)
                 conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
+                sleep(0.008)  # Sleep for 8 milliseconds to avoid overloading the server
 
         finally:
             # If the connection is lost, remove it from the client tracking structure
@@ -96,8 +96,7 @@ class Server:
         try:
             # While connections exist, consistently send updated player data to all clients
             while conn:
-                sleep(0.008)  # Sleep for 0.01 seconds to avoid overloading the server
-
+                sleep(0.008)
                 if len(self.bullets) > 0:
                     self.lock.acquire()
                     data = json.dumps(self.bullets)
