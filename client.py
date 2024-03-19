@@ -82,7 +82,6 @@ class Client:
             # Handles cases of data overflow
             divider = data.find(']')
             data = data[:divider + 1]
-            print(data)
             try:
                 data = json.loads(data)
 
