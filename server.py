@@ -55,6 +55,7 @@ class Server:
                     # match
                     for d in json_data:
                         for player in self.players:
+                            print(d)
                             if player['addr'] == d['addr']:
                                 player['x'] = d['x']
                                 player['y'] = d['y']
@@ -99,9 +100,9 @@ class Server:
             while conn:
                 sleep(0.008)
                 if len(self.bullets) > 0:
-                    self.lock.acquire()
                     data = json.dumps(self.bullets)
                     conn.send(bytes(data, encoding="utf-8"))
+                    self.lock.acquire()
                     self.bullets = []
                     self.lock.release()
 
