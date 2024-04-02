@@ -31,7 +31,7 @@ class Server:
         print(f"[NEW CONNECTION]: {addr} Connected")  # Message for every new connection
 
         # Initializing a new player object containing the client address
-        joined_p = {"obj": "player", "addr": addr[0], "x": 64, "y": 720-64, "color": "white"}
+        joined_p = {"obj": "player", "addr": addr[0], "x": 64, "y": 720 - 64, "color": "white"}
 
         self.players.append(joined_p)  # Appending the player object to the list of players
         try:
@@ -50,27 +50,17 @@ class Server:
                 for d in data:
                     json_data.append(json.loads(d))
 
-                if json_data[0]["obj"] == "player":
-                    # For each JSON object, check the client's address and update player's coordinates if there's a
-                    # match
-                    for d in json_data:
+                for d in json_data:
+                    if d['obj'] == "player":
+                        # For each JSON object, check the client's address and update player's coordinates if there's a
+                        # match
                         for player in self.players:
-                            print(d)
                             if player['addr'] == d['addr']:
                                 player['x'] = d['x']
                                 player['y'] = d['y']
                                 player['color'] = d['color']
-
-                if json_data[0]["obj"] == "bullet":
-                    self.lock.acquire()
-                    try:
-                        self.bullets.append(json_data[0])
-                    except:
-                        print("Send bullet failed!")
-                    finally:
-                        self.lock.release()
-
-
+                    if d['obj'] == "bullet":
+                        self.send_bullet([json_data[0]])
         finally:
             # If the connection is lost, remove the player and connection from their respective tracking structures
             with self.clients_lock:
@@ -83,7 +73,6 @@ class Server:
         try:
             # While connections exist, consistently send updated player data to all clients
             while conn:
-                # print(self.players)
                 data = json.dumps(self.players)
                 conn.send(bytes(data, encoding="utf-8"))  # Encode the data and send it to the client
                 sleep(0.008)  # Sleep for 8 milliseconds to avoid overloading the server
@@ -94,23 +83,10 @@ class Server:
                 self.clients.remove(conn)
             conn.close()  # Close the connection
 
-    def send_bullets(self, conn, addr):
-        try:
-            # While connections exist, consistently send updated player data to all clients
-            while conn:
-                sleep(0.008)
-                if len(self.bullets) > 0:
-                    data = json.dumps(self.bullets)
-                    conn.send(bytes(data, encoding="utf-8"))
-                    self.lock.acquire()
-                    self.bullets = []
-                    self.lock.release()
-
-        finally:
-            # If the connection is lost, remove it from the client tracking structure
-            with self.clients_lock:
-                self.clients.remove(conn)
-            conn.close()  # Close the connection
+    def send_bullet(self, bullet):
+        for conn in self.clients:  # For every client connected
+            data = json.dumps(bullet)
+            conn.send(bytes(data, encoding="utf-8"))  # Send bullet data
 
     def start(self):
         print(f'[SERVER STARTED]! ({self.server.getsockname()})')  # Notify the server has started
@@ -125,7 +101,5 @@ class Server:
             # Start two threads - one for handling incoming data from the client, another for sending data to them
             thread1 = threading.Thread(target=self.handle_client, args=(conn, addr))
             thread2 = threading.Thread(target=self.send_player_data, args=(conn, addr))
-            thread3 = threading.Thread(target=self.send_bullets, args=(conn, addr))
             thread1.start()
             thread2.start()
-            thread3.start()

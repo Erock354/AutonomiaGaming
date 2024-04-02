@@ -67,21 +67,22 @@ class Client:
         data = json.dumps(bullet_data)
         try:
             self.conn.send(bytes(data, encoding="utf-8"))
-        except:
+        finally:
             pass
 
     # Function to receive data - updates on all players from the server
     # Handles network issues gracefully by failing silently
     def receive(self):
         while True:
-            sleep(0.008)
 
-            data = self.conn.recv(2048)
+            data = self.conn.recv(1024)
             data = data.decode("utf-8")
 
             # Handles cases of data overflow
             divider = data.find(']')
             data = data[:divider + 1]
+            if len(data) == 0:
+                continue
             data = json.loads(data)
             # Upon receiving data of a new player, create a new player instance and add to the list of online players
             for obj in data:
