@@ -12,12 +12,12 @@ class Player(pygame.sprite.Sprite):
     # STATIC GAME VARIABLE
     GRAVITY = 2
     SHOOTING_CD = 20
-    HP = 100
 
     # Initialize a Player object with specified x, y coordinates and height and width of the player. Sets velocity
     # attributes on x and y coordinates to 0
     def __init__(self, x, y, height, width, color):
         super().__init__()
+        self.hp = 10.0
         self.color = color
         self.rect = pygame.Rect(x, y, height, width)
         self.x_vel = 0
@@ -61,7 +61,7 @@ class Player(pygame.sprite.Sprite):
 
         # Draw Player on the game screen
     def draw(self, win):
-        pygame.draw.rect(win, self.color, self.rect)
+        pygame.draw.rect(win, (self.color[0], self.color[1], self.color[2], int(255 * (self.hp/10))), self.rect)
 
     # Function to update Player state when they land from a jump
     def landed(self):

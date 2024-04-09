@@ -48,11 +48,11 @@ class Client:
     # Function to send data of the relevant player to the server
     # Sends data anytime when the player's coordinates are changed
     def send(self):
-        player_before = Player(0, 0, 0, 0, "white")
+        player_before = Player(0, 0, 0, 0, (255, 255, 255, 255))
         while True:
             if player_before.rect.x != self.player.rect.x or player_before.rect.y != self.player.rect.y:
                 player_data = {"obj": "player", "addr": self.CLIENT_IP, "x": self.player.rect.x, "y": self.player.rect.y,
-                               "color": self.player.color}
+                               "color": self.player.color, "hp": self.player.hp}
                 try:
                     data = json.dumps(player_data)
                     self.conn.send(bytes(data, encoding="utf-8"))
@@ -79,10 +79,12 @@ class Client:
             data = data.decode("utf-8")
 
             # Handles cases of data overflow
-            divider = data.find(']')
-            data = data[:divider + 1]
+            # divider = data.find(']')
+            # data = data[:divider + 1]
+
             if len(data) == 0:
                 continue
+
             data = json.loads(data)
             # Upon receiving data of a new player, create a new player instance and add to the list of online players
             for obj in data:
@@ -102,5 +104,6 @@ class Client:
                         online_player.rect.x = obj['x']
                         online_player.rect.y = obj['y']
                         online_player.color = obj['color']
+                        online_player.hp = obj['hp']
 
 

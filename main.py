@@ -30,6 +30,8 @@ def draw(win, other_players, objects, bullets):
     # Draw the online players on the screen
     for player in other_players:
         player.draw(win)
+        # print(int(255 * (player.hp / 10)))
+        # print(player.hp)
 
     for bullet in bullets:
         bullet.draw(win)
@@ -95,7 +97,7 @@ def get_font(size):  # Returns Press-Start-2P in the desired size
 def game(ip_server, ip_client=None):
     running = True  # Boolean variable to keep track of the game state
     block_size = 64  # Size of the game objects
-    player = Player(64, HEIGHT-64, block_size, block_size, "red")  # Create a player instance
+    player = Player(64, HEIGHT-64, block_size, block_size, (255, 0, 0))  # Create a player instance
     # Connect to the server
     if ip_client:
         client = Client(player, ip_server, ip_client)
@@ -129,6 +131,12 @@ def game(ip_server, ip_client=None):
             bullet.update(SCREEN)
             if bullet.rect.x < 0 or bullet.rect.x > SCREEN.get_width() or bullet.rect.y < 0 or bullet.rect.y > SCREEN.get_height():
                 client.bullets.remove(bullet)
+
+            if pygame.rect.Rect.colliderect(bullet.rect, player):
+                player.hp = player.hp - 2.5
+                if player.hp < 0:
+                    player.hp = 0
+                print(client.online_players[0])
 
         player.loop(FPS)  # Call the loop function to update the player's position
         handle_movement(player, objects)  # Call the handle_movement function to handle player movements

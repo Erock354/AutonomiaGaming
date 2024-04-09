@@ -31,7 +31,7 @@ class Server:
         print(f"[NEW CONNECTION]: {addr} Connected")  # Message for every new connection
 
         # Initializing a new player object containing the client address
-        joined_p = {"obj": "player", "addr": addr[0], "x": 64, "y": 720 - 64, "color": "white"}
+        joined_p = {"obj": "player", "addr": addr[0], "x": 64, "y": 720 - 64, "color": [255, 255, 255], "hp": 10}
 
         self.players.append(joined_p)  # Appending the player object to the list of players
         try:
@@ -59,6 +59,7 @@ class Server:
                                 player['x'] = d['x']
                                 player['y'] = d['y']
                                 player['color'] = d['color']
+                                player['hp'] = d['hp']
                     if d['obj'] == "bullet":
                         self.send_bullet([json_data[0]])
         finally:
