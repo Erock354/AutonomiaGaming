@@ -48,9 +48,9 @@ class Client:
     # Function to send data of the relevant player to the server
     # Sends data anytime when the player's coordinates are changed
     def send(self):
-        player_before = Player(0, 0, 0, 0, (255, 255, 255, 255))
+        player_before = Player(0, 0, 0, 0, (255, 255, 255))
         while True:
-            if player_before.rect.x != self.player.rect.x or player_before.rect.y != self.player.rect.y:
+            if player_before.rect.x != self.player.rect.x or player_before.rect.y != self.player.rect.y or player_before.hp != self.player.hp:
                 player_data = {"obj": "player", "addr": self.CLIENT_IP, "x": self.player.rect.x, "y": self.player.rect.y,
                                "color": self.player.color, "hp": self.player.hp}
                 try:

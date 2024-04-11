@@ -1,3 +1,5 @@
+import pygame
+
 from block import Block
 from button import Button
 from client import *
@@ -17,24 +19,25 @@ PLAYER_VEL = 8
 FPS = 120
 CLOCK = pygame.time.Clock()
 SCREEN = pygame.display.set_mode([WIDTH, HEIGHT])
+SURFACE = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
 
 # Function to draw the game objects on the game window
-def draw(win, other_players, objects, bullets):
+def draw(other_players, objects, bullets):
     SCREEN.fill("white")  # Fill the game screen with white color
+    SCREEN.blit(SURFACE, (0, 0))
+    SURFACE.fill((0, 0, 0, 0))  # Reset surface
 
     # Draw the static game objects 
     for obj in objects:
-        obj.draw(win)
+        obj.draw(SCREEN)
 
     # Draw the online players on the screen
     for player in other_players:
-        player.draw(win)
-        # print(int(255 * (player.hp / 10)))
-        # print(player.hp)
+        player.draw(SURFACE)
 
     for bullet in bullets:
-        bullet.draw(win)
+        bullet.draw(SCREEN)
 
     # Update the game display after drawing the objects
     pygame.display.update()
@@ -115,14 +118,13 @@ def game(ip_server, ip_client=None):
 
     while running:
         CLOCK.tick(FPS)
-
         # Event handling for game events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # If the user closes the game window
                 running = False  # Set the game state to false
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    player.jump(objects=objects)  # Call the jump function if the user presses the spacebar
+                    player.jump(objects=objects)  # Call the jump function if the user presses the space bar
 
             if pygame.mouse.get_pressed() == (1, 0, 0):  # Shoot when mouse left click
                 player.shoot(client)
@@ -136,12 +138,10 @@ def game(ip_server, ip_client=None):
                 player.hp = player.hp - 2.5
                 if player.hp < 0:
                     player.hp = 0
-                print(client.online_players[0])
 
         player.loop(FPS)  # Call the loop function to update the player's position
         handle_movement(player, objects)  # Call the handle_movement function to handle player movements
-        draw(win=SCREEN, other_players=client.online_players,
-             objects=objects, bullets=client.bullets)  # Call the draw function to draw the game objects
+        draw(other_players=client.online_players, objects=objects, bullets=client.bullets)  # Call the draw function to draw the game objects
 
     pygame.quit()
 
