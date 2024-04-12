@@ -7,7 +7,7 @@ class Bullet(pygame.sprite.Sprite):
     BULLET_SPEED = 16
     BULLET_LIFETIME = 720
 
-    def __init__(self, x, y, angle, dmg):
+    def __init__(self, x, y, angle, dmg, owner):
         super().__init__()
         self.dmg = dmg
         self.rect = pygame.Rect(x, y, self.BULLET_SCALE, self.BULLET_SCALE)
@@ -21,6 +21,7 @@ class Bullet(pygame.sprite.Sprite):
         self.y_vel = math.sin(self.angle * (2 * math.pi / 360)) * self.speed
         self.bullet_lifetime = self.BULLET_LIFETIME
         self.spawn_time = pygame.time.get_ticks()  # gets the specific time that the bullet was created
+        self.owner = owner
 
     def bullet_movement(self):
         self.x += self.x_vel

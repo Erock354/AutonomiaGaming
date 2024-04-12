@@ -48,22 +48,22 @@ class Client:
     # Function to send data of the relevant player to the server
     # Sends data anytime when the player's coordinates are changed
     def send(self):
-        player_before = Player(0, 0, 0, 0, (255, 255, 255))
+        player_before = Player(0, 0, 0, 0, (255, 255, 255), "guest")
         while True:
             if player_before.rect.x != self.player.rect.x or player_before.rect.y != self.player.rect.y or player_before.hp != self.player.hp:
                 player_data = {"obj": "player", "addr": self.CLIENT_IP, "x": self.player.rect.x, "y": self.player.rect.y,
-                               "color": self.player.color, "hp": self.player.hp}
+                               "color": self.player.color, "hp": self.player.hp, "nick": self.player.nick, "kills": self.player.kills}
                 try:
                     data = json.dumps(player_data)
                     self.conn.send(bytes(data, encoding="utf-8"))
                     player_before.rect.x = self.player.rect.x
                     player_before.rect.y = self.player.rect.y
-                except:
+                finally:
                     pass
             sleep(0.008)
 
     def send_bullet(self, bullet):
-        bullet_data = {"obj": "bullet", "x": bullet.x, "y": bullet.y, "angle": bullet.angle, "dmg": bullet.dmg}
+        bullet_data = {"obj": "bullet", "x": bullet.x, "y": bullet.y, "angle": bullet.angle, "dmg": bullet.dmg, "owner": bullet.owner}
         data = json.dumps(bullet_data)
         try:
             self.conn.send(bytes(data, encoding="utf-8"))
@@ -89,12 +89,12 @@ class Client:
             # Upon receiving data of a new player, create a new player instance and add to the list of online players
             for obj in data:
                 if obj['obj'] == "bullet":
-                    self.bullets.append(Bullet(obj['x'], obj['y'], obj['angle'], obj['dmg']))
+                    self.bullets.append(Bullet(obj['x'], obj['y'], obj['angle'], obj['dmg'], obj['owner']))
                     break
                 if obj['addr'] not in self.addr_online_players:
                     self.addr_online_players.append(obj['addr'])  # Add the player's address to the list of online
                     # players
-                    new_player = Player(int(obj['x']), int(obj['y']), 64, 64, obj['color'])  # Create a new
+                    new_player = Player(int(obj['x']), int(obj['y']), 64, 64, obj['color'], obj['nick'])  # Create a new
                     # player instance
                     new_player.addr = obj['addr']  # Set the player's address
                     self.online_players.append(new_player)  # Add the player to the list of online players
@@ -105,5 +105,7 @@ class Client:
                         online_player.rect.y = obj['y']
                         online_player.color = obj['color']
                         online_player.hp = obj['hp']
+                        online_player.nick = obj['nick']
+                        online_player.kills = obj['kills']
 
 

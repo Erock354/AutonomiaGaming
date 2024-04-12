@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
 
     # Initialize a Player object with specified x, y coordinates and height and width of the player. Sets velocity
     # attributes on x and y coordinates to 0
-    def __init__(self, x, y, height, width, color):
+    def __init__(self, x, y, height, width, color, nick):
         super().__init__()
         self.hp = 10.0
         self.color = color
@@ -28,6 +28,8 @@ class Player(pygame.sprite.Sprite):
         self.fall_count = 0
         self.addr = None
         self.shoot_cd = 0  # Shooting cooldown
+        self.nick = nick
+        self.kills = 0  # Kills counter
 
     # Function to make the player jump, increases y_velocity depending on the gravity
     def jump(self, objects):
@@ -83,7 +85,7 @@ class Player(pygame.sprite.Sprite):
         if self.shoot_cd <= 0:                  # If cd is 0 player can shoot
             self.shoot_cd = self.SHOOTING_CD    # Shooting reset otherwise u can spam shooting
 
-            bullet = Bullet(self.rect.centerx - 16, self.rect.centery - 16, angle, 25)
+            bullet = Bullet(self.rect.centerx - 16, self.rect.centery - 16, angle, 25, self.nick)
             # -16 on the X and the Y coordinates are used to fix the bullet spawning point (the bullet start point
             # will be the center of the player)
             client.send_bullet(bullet)

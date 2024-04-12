@@ -100,7 +100,7 @@ def get_font(size):  # Returns Press-Start-2P in the desired size
 def game(ip_server, ip_client=None):
     running = True  # Boolean variable to keep track of the game state
     block_size = 64  # Size of the game objects
-    player = Player(64, HEIGHT-64, block_size, block_size, (255, 0, 0))  # Create a player instance
+    player = Player(64, HEIGHT-64, block_size, block_size, (255, 0, 0), "Erock")  # Create a player instance
     # Connect to the server
     if ip_client:
         client = Client(player, ip_server, ip_client)
@@ -131,10 +131,14 @@ def game(ip_server, ip_client=None):
 
         for bullet in client.bullets:
             bullet.update(SCREEN)
+
+            # Check is the bullets go off the screen. In case, they will be deleted
             if bullet.rect.x < 0 or bullet.rect.x > SCREEN.get_width() or bullet.rect.y < 0 or bullet.rect.y > SCREEN.get_height():
                 client.bullets.remove(bullet)
 
-            if pygame.rect.Rect.colliderect(bullet.rect, player):
+            # Bullets damage
+            if pygame.rect.Rect.colliderect(bullet.rect, player) and bullet.owner != player.nick:
+                client.bullets.remove(bullet)
                 player.hp = player.hp - 2.5
                 if player.hp < 0:
                     player.hp = 0
